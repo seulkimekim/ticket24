@@ -18,7 +18,7 @@
 	/* body{margin-top: 116px;}
 
 	table, th, td, textarea {border: solid gray 1px;}
-	
+	 
 	#table {border-collapse: collapse;
 	 		width: 900px;
 	 		}
