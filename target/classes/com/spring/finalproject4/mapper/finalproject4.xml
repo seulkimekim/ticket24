@@ -361,7 +361,7 @@
 		                where status = 1
 				    ) V
 		where notice_id = #{seq} -->
-		select previousseq, previoussubject
+		<!-- select previousseq, previoussubject
 		       , notice_id,fk_userid,no_cate_name,category, ticketopenday, subject, readCount
 		       , content, regDate
 		       , fileName,orgFilename,fileSize
@@ -383,6 +383,34 @@
 	                        select notice_id,fk_userid,no_cate_name,category,ticketopenday,subject,content,pw,readCount,regDate,status,fileName,orgFilename,fileSize
 	                        from yes_notice N join yes_notice_cate C
 	                        on N.category = C.no_cate_code
+                        ) T
+		                where status = 1
+				    ) V
+		where notice_id = #{seq} -->
+		select previousseq, previoussubject
+		       , notice_id,fk_userid,no_cate_name,category, ticketopenday, subject, readCount
+		       , content, regDate, prod_id, prod_title, prod_img
+		       , fileName,orgFilename,fileSize
+			   , nextseq, nextsubject
+				from
+				    (
+		                select lag(notice_id, 1) over(order by notice_id desc) as previousseq
+				       , lag(subject, 1) over(order by notice_id desc) as previoussubject
+				       
+				       , notice_id, fk_userid, no_cate_name, category, subject, readCount
+		               , nvl(ticketopenday, ' ') as ticketopenday, prod_id, prod_title, prod_img
+				       , content, to_char(regDate, 'yyyy-mm-dd') as regDate
+				       , status, fileName, orgFilename, fileSize
+				       
+				       , lead(notice_id, 1) over(order by notice_id desc) as nextseq
+				       , lead(subject, 1) over(order by notice_id desc) as nextsubject
+		                from 
+                        (
+	                        select notice_id,fk_userid,no_cate_name,N.category,ticketopenday, P.prod_id, P.prod_title, P.prod_img, N.subject, N.content, readCount, N.regDate, N.status,fileName,orgFilename,fileSize
+	                        from yes_notice N left join yes_notice_cate C
+	                        on N.category = C.no_cate_code
+                            left join prod P
+                            on P.prod_id = N.prod_id
                         ) T
 		                where status = 1
 				    ) V
@@ -516,15 +544,27 @@
 	</insert>
 	
 	<!-- 공지사항 글 등록하기(첨부파일 O) -->
-	<insert id="noticeAdd_withFile">
-		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content, fileName, orgFilename, fileSize)
-		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content}, #{fileName}, #{orgFilename}, #{fileSize})
+	<insert id="noticeAdd_withFile" parameterType="com.spring.model.NoticeVO">
+		<if test="prod_id != 0">
+		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content, prod_id, fileName, orgFilename, fileSize)
+		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content}, #{prod_id}, #{fileName}, #{orgFilename}, #{fileSize})
+		</if>
+		<if test="prod_id == 0">
+		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content, prod_id, fileName, orgFilename, fileSize)
+		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content}, 0, #{fileName}, #{orgFilename}, #{fileSize})
+		</if>
 	</insert>
 	
 	<!-- 공지사항 글 등록하기(첨부파일 X) -->
-	<insert id="noticeAdd">
-		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content)
-		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content})
+	<insert id="noticeAdd" parameterType="com.spring.model.NoticeVO">
+		<if test="prod_id != 0">
+		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content,prod_id)
+		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content},#{prod_id})
+		</if>
+		<if test="prod_id == 0">
+		insert into yes_notice(notice_id,fk_userid,category,ticketopenday,subject,content,prod_id)
+		values(noticeSeq.nextval, #{fk_userid}, #{category}, #{ticketopenday}, #{subject}, #{content},0)
+		</if>
 	</insert>
 
 	<!-- 관리자가 Qna 글 1개 보기 클릭시 Adminread 상태를 0 -> 1로 바꿈. -->
@@ -565,8 +605,16 @@
 		update yes_notice set category = #{category}, subject = #{subject}, content = #{content}
 		where notice_id = #{notice_id}
 	</update>
+	
+	<!-- 공연명으로 티켓오픈일자 검색  -->
+	<select id="ticketopenSearchList" parameterType="String" resultType="com.spring.model.ProdVO">
+		select prod_id, prod_title, prod_img, to_char(info_open_date, 'yyyy.mm.dd') || '(' || to_char(info_open_date,'dy') || ')' as  info_open_date, info_close_date
+		from prod
+		where prod_title like '%' || #{prod_title} || '%'
+	</select>
 
 	<!-- ===== BOARD(공지사항, FAQ, QNA, 리뷰 부분 ===== -->
+
 
 	<select id="getTotalProdCount" parameterType="HashMap" resultType="int">
 		select count(*)

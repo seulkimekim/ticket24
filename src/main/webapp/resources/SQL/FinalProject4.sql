@@ -7592,18 +7592,82 @@ where prod_id =1 and seat_status = 1;
 
 
 select S.seattype_id, seat_type, seat_price, seat_color, remainseatCnt
-		from yes_seat_type T join (
-		    select seattype_id, count(*) as remainseatCnt
-		    from(
-		        select *
-		        from (
-		            select seat_id, seattype_id, seat_name, seat_status, D.date_id, D.prod_id, date_showday, date_showtime
-		            from yes_show_seat S join yes_show_date D
-		            on S.date_id = D.date_id
-		        )T
-				where T.prod_id = 1 and seat_status = 0
-				and date_id = 1
-		    )
-		    group by seattype_id
-		) S
-		on T.seattype_id = S.seattype_id
+from yes_seat_type T join (
+    select seattype_id, count(*) as remainseatCnt
+    from(
+        select *
+        from (
+            select seat_id, seattype_id, seat_name, seat_status, D.date_id, D.prod_id, date_showday, date_showtime
+            from yes_show_seat S join yes_show_date D
+            on S.date_id = D.date_id
+        )T
+        where T.prod_id = 1 and seat_status = 0
+        and date_id = 1
+    )
+    group by seattype_id
+) S
+on T.seattype_id = S.seattype_id;
+
+
+select prod_id
+from yes_notice;
+
+select prod_id, prod_title, prod_img, to_char(info_open_date, 'yyyy.mm.dd') || '(' || to_char(info_open_date,'dy') || ')' as  info_open_date, info_close_date
+-- select * 
+from prod
+where prod_title like '%' || '여름' || '%';
+        
+update prod set date_start = info_open_date + 30, date_end = info_close_date + 30;
+update prod set info_close_date = info_open_date + 3, date_end = date_start + 3;
+-- date_start, date_end 는 공연시작일 공연종료일
+-- info_open_date, info_close_date 는 티켓오픈일 티켓마감일
+
+commit;
+
+select * 
+from prod
+where prod_id = 2;
+
+
+
+
+select previousseq, previoussubject
+		       , notice_id,fk_userid,no_cate_name,category, ticketopenday, subject, readCount
+		       , content, regDate, prod_id, prod_title, prod_img
+		       , fileName,orgFilename,fileSize
+			   , nextseq, nextsubject
+				from
+				    (
+		                select lag(notice_id, 1) over(order by notice_id desc) as previousseq
+				       , lag(subject, 1) over(order by notice_id desc) as previoussubject
+				       
+				       , notice_id, fk_userid, no_cate_name, category, subject, readCount
+		               , nvl(ticketopenday, ' ') as ticketopenday, prod_id, prod_title, prod_img
+				       , content, to_char(regDate, 'yyyy-mm-dd') as regDate
+				       , status, fileName, orgFilename, fileSize
+				       
+				       , lead(notice_id, 1) over(order by notice_id desc) as nextseq
+				       , lead(subject, 1) over(order by notice_id desc) as nextsubject
+		                from 
+                        (
+	                        select notice_id,fk_userid,no_cate_name,N.category,ticketopenday, P.prod_id, P.prod_title, P.prod_img, N.subject, N.content, readCount, N.regDate, N.status,fileName,orgFilename,fileSize
+	                        from yes_notice N left join yes_notice_cate C
+	                        on N.category = C.no_cate_code
+                            left join prod P
+                            on P.prod_id = N.prod_id
+                        ) T
+		                where status = 1
+				    ) V
+		where notice_id = 1
+
+select * from prod
+where prod_id=1;
+
+update prod set date_start = date_start + 30
+where prod_id = 1;
+update prod set date_end = date_end + 50
+where prod_id = 1;
+
+rollback;
+
+commit;

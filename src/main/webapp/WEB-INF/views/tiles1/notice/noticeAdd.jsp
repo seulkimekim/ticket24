@@ -235,6 +235,35 @@
 		
 	});	// end of $(document).ready(function(){}) --------------------
 	
+	function goCategory(value) {
+		
+		if(value == 1){
+			$(".ticketopen").show();
+		}
+		else {
+			$(".ticketopen").hide();
+		}
+		
+	}
+	
+	
+	function goTicketOpen() {
+		
+		// 팝업창 띄우기
+		var prod_title = $("#prod_title").val().trim(); // != value
+		
+		if(prod_title == '') {
+			alert("공연명을 입력해주세요");
+			return;
+		}
+		else {
+			var url = "<%= ctxPath%>/ticketopenSearch.action?prod_title="+prod_title;
+			window.open(url, "공연명으로 티켓오픈일자 검색",
+						"left=350px, top=100px, width=800px, height=650px");
+		}
+	}
+	
+	
 </script>
 
 
@@ -260,7 +289,7 @@
 					<td>
 						<input type="hidden" name="fk_userid" value="${sessionScope.loginuser.userid}">
 						<input type="hidden" name="name" value="${sessionScope.loginuser.name}" class="short" readonly="readonly" />
-						<select name="category" id="category">
+						<select name="category" id="category" onchange="goCategory(this.value);">
 							<option value="1">티켓오픈</option>
 							<option value="2">서비스점검</option>
 							<option value="3">변경/취소</option>
@@ -269,10 +298,18 @@
 					</td>
 				</tr>
 				<%-- ### 티켓오픈데이 date 형식으로 바꾸고, 오전/오후 선택해서 시간 입력해야 한다. ### --%>
-				<tr>
-					<th>티켓오픈데이</th>
+				<tr class="ticketopen">
+					<th>공연명</th>
 					<td>
-						<input type="text" name="ticketopenday" placeholder="2019.11.27(수) 오후 2:00"  size="30" />
+						<input type="text" id="prod_title" name="prod_title" placeholder="투란도트 " size="30" />
+						<i onclick="goTicketOpen();" class="fas fa-search"></i>
+						<input type="hidden" name="prod_id" id="prod_id" size="10" />
+					</td>
+				</tr>
+				<tr class="ticketopen">
+					<th>티켓오픈</th>
+					<td>
+						<input type="text" id="ticketopenday" name="ticketopenday" placeholder="2020.08.10(월) 오후 3:00"  size="30" />
 					</td>
 				</tr>
 				<tr>
