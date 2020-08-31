@@ -70,6 +70,32 @@ insert into yes_show_category(category_id, category_name)
 values(6,'아동');
 commit;
 
+-- 위에서 아래로 변경
+insert into yes_show_category(category_id, category_name)
+values(1,'콘서트');
+insert into yes_show_category(category_id, category_name)
+values(2,'뮤지컬');
+insert into yes_show_category(category_id, category_name)
+values(3,'연극');
+insert into yes_show_category(category_id, category_name)
+values(4,'클래식');
+insert into yes_show_category(category_id, category_name)
+values(5,'전시');
+insert into yes_show_category(category_id, category_name)
+values(6,'아동');
+commit;
+
+select * from yes_show_category;
+update yes_show_category set category_name = '콘서트'
+where category_id = 1;
+update yes_show_category set category_name = '뮤지컬'
+where category_id = 2;
+update yes_show_category set category_name = '연극'
+where category_id = 3;
+update yes_show_category set category_name = '클래식'
+where category_id = 4;
+
+
 -- 세부 카테고리 테이블
 drop table yes_show_category_detail cascade constraints purge;
 create table yes_show_category_detail
@@ -149,9 +175,48 @@ values(seq_show_category_detail.nextval, 6, '기타');
 
 commit;
 
+select * from yes_show_category_detail;
+
+update yes_show_category_detail set category_detail_name = '국내뮤지션'
+where category_detail_id = 2;
+update yes_show_category_detail set category_detail_name = '해외뮤지션'
+where category_detail_id = 3;
+update yes_show_category_detail set category_detail_name = '페스티벌'
+where category_detail_id = 4;
 
 
+update yes_show_category_detail set category_detail_name = '라이선스'
+where category_detail_id = 6;
+update yes_show_category_detail set category_detail_name = '오리지널'
+where category_detail_id = 7;
+update yes_show_category_detail set category_detail_name = '창작'
+where category_detail_id = 8;
 
+commit;
+
+update yes_show_category_detail set category_id = 2 , category_detail_name = '퍼포먼스'
+where category_detail_id = 9;
+
+update yes_show_category_detail set category_detail_name = '전체보기'
+where category_detail_id = 10;
+update yes_show_category_detail set category_detail_name = '대학로'
+where category_detail_id = 11;
+update yes_show_category_detail set category_detail_name = '기타지역'
+where category_detail_id = 12;
+
+insert into yes_show_category_detail(category_detail_id, category_id, category_detail_name)
+values(13, 4, '전체보기');
+
+update yes_show_category_detail set category_detail_name = '전체보기'
+where category_detail_id = 13;
+update yes_show_category_detail set category_detail_name = '클래식'
+where category_detail_id = 14;
+update yes_show_category_detail set category_detail_name = '발레/무용'
+where category_detail_id = 15;
+update yes_show_category_detail set category_detail_name = '국악'
+where category_detail_id = 16;
+
+select * from yes_show_category_detail;
 
 
 
@@ -7671,3 +7736,14 @@ where prod_id = 1;
 rollback;
 
 commit;
+
+update yes_member set point = 1000
+where userid = 'kkimsg93';
+
+
+alter table yes_point drop constraint FK_point_fk_review_id cascade;
+
+select * from yes_point;
+
+alter table yes_point
+modify fk_rev_id default 0; 
