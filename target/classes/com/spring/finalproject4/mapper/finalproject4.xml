@@ -281,7 +281,7 @@
 	
 	<insert id="insertPoint" parameterType="HashMap">
 		insert into yes_point(point_id, fk_userid, content, point, fk_rev_date) 
-		values(seq_point.nextval, #{userid}, '포인트 적립!', #{paySum}*0.01, sysdate)
+		values(seq_point.nextval, #{userid}, '예매 포인트 적립', #{paySum}*0.01, sysdate)
 	</insert>
 	
 	<select id="getPoint" parameterType="String" resultType="String">
@@ -296,6 +296,7 @@
 		where userid = #{userid}
 	</update>
 	
+	<!-- ### 바꿈 ### -->
 	<insert id="insertPoint2" parameterType="HashMap">
 		insert into yes_point(point_id, fk_userid, content, point, fk_rev_date) 
 		values(seq_point.nextval, #{userid}, '포인트 사용!', #{usePoint}, sysdate)
@@ -893,7 +894,7 @@
 	<select id="couponCount" resultType="String" parameterType="String">
 		select count(*)
 		from yes_coupon
-		where fk_userid = #{userid}
+		where fk_userid = #{userid} and coupon_status = 1
 	</select>
 	
 	

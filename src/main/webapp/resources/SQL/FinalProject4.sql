@@ -218,8 +218,6 @@ where category_detail_id = 16;
 
 select * from yes_show_category_detail;
 
-
-
 ---테이블 드롭
 drop table prod cascade constraints purge;
 
@@ -7747,3 +7745,13 @@ select * from yes_point;
 
 alter table yes_point
 modify fk_rev_id default 0; 
+
+select * 
+from yes_coupon
+where fk_userid = 'leess' and coupon_status = 1;
+
+alter table yes_point add use number default 0;
+
+update yes_point set use = 1
+where point_id = 15;
+commit;

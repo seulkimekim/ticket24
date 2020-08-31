@@ -71,7 +71,9 @@
 							<td width="20%">${point.fk_rev_date} </td>
 							<td width="55%" class="left">${point.content}</td>
 							<td width="10%">${point.fk_rev_id}</td>
-							<td width="15%" class="point right"><fmt:formatNumber value="${point.point }" pattern="###,###" />원</td>
+							<td width="15%" class="point right">
+								<fmt:formatNumber value="${point.point }" pattern="###,###" />원
+							</td>
 						</tr>
 					</c:forEach>
                 </tbody>
