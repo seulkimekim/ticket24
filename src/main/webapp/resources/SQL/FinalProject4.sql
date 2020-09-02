@@ -7755,3 +7755,58 @@ alter table yes_point add use number default 0;
 update yes_point set use = 1
 where point_id = 15;
 commit;
+
+select * from yes_qna;
+update yes_qna set subject = '무통장입금'
+where qna_id = 15;
+commit;
+
+select * from yes_show_date;
+
+select point from yes_member
+where userid = 'kkimsg93';
+
+select * from yes_reserve
+where user_id = 'kkimsg93';
+
+
+
+select to_char(R.rev_date, 'yyyy.mm.dd') AS rev_date
+       , P.prod_title AS prod_title
+       , P.prod_id AS prod_id
+       , P.prod_img AS prod_img
+       , to_char(P.date_start, 'yyyy,mm.dd') AS date_start
+       , to_char(P.date_end, 'yyyy,mm.dd') AS date_end 
+       , R.rev_id AS rev_id
+       , R.rev_qnty AS rev_qnty
+       , M.map_name AS map_name
+       , to_char(D.date_showday, 'yyyy.mm.dd') || '(' || to_char(D.date_showday, 'dy')   || ') ' || to_char(D.date_showday, 'hh24:mm') AS date_showday
+       , to_char(D.date_showday - 1, 'yyyy.mm.dd') || '(' || to_char(D.date_showday - 1, 'dy')   || ') ' || to_char(D.date_showday - 1, 'hh24:mm') AS cancel_day
+       , S.status AS status
+from yes_reserve R join prod P
+on R.prod_id = P.prod_id
+join yes_show_map M
+on P.map_id = M.map_id
+join yes_show_date D
+on R.date_id = D.date_id
+join yes_rev_status S
+on R.rev_id = S.rev_id
+where R.user_id = 'kkimsg93' and R.rev_id = 1
+-- 예매 상세보기
+-- status 1 예매상태 status 0 취소상태
+        
+        
+select t.seat_type AS seat_type
+     , t.seat_price AS seat_price
+     , p.seat_name AS seat_name
+     , s.seat_status AS seat_status
+from yes_seat_type t join yes_show_seat s
+on t.seattype_id = s.seattype_id       
+join yes_paySeat p
+on p.date_id = s.date_id and p.seat_name = s.seat_name
+where p.user_id = 'kkimsg93';
+-- paySeat 의 rev_id 컬럼에 null 이 들어가 있는데 rev_id 컬럼에 rev_id 를 추가하고
+-- rev_id 별로 보게 해야한다. 
+
+select * from yes_paySeat;
+select * from yes_paySeat;

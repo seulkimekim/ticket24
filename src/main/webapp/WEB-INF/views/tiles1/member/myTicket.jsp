@@ -16,11 +16,30 @@
     
     <script type="text/javascript" src="<%= request.getContextPath()%>/resources/js/jquery-3.3.1.min.js"></script>
     
-    <script type="text/javascript">
+    <script type="text/javascript">    
+
+	    window.onload = function () {
+	    	let star = document.getElementsByClassName('star');
+	    	let starCnt = document.getElementsByClassName('starCnt');
+	    	
+	    	for(let i=0; i<star.length; i++) {
+	    		for(let j=0; j<star[i].innerText; j++) {
+	    			starCnt[i].innerHTML += '<i class="reviewStar"></i>';
+	    		}
+	    	}
+	    }
     
-    	function updateReview(review_id){    		
+    
+    
+    	$(document).ready(function(){
+    		
+    	});	
+    
+    	function updateReview(review_id){
+    		
     		//console.log("review_id : ", review_id);
     		window.open('/finalproject4/updateReview.action?review_id='+review_id, '리뷰수정', 'width=800, height=600');
+    		
     	}
     	
     </script>
@@ -69,7 +88,7 @@
             </tr>
             </thead>
             <tbody>
-            	<c:if test="${empty myReserveList}">
+            <c:if test="${empty myReserveList}">
 			        <tr align="center">
 			            <td colspan="4">나의 예매 내역이 존재하지 않습니다.</td>
 			        </tr>
@@ -80,7 +99,8 @@
 		                <td>
 		                    <div class="showInfoBox">
 		                        <div class="show_poster">
-		                            <img src="resources/images/${my.prod_img }" alt="poster" width="90px" onclick="location.href='<%=ctxPath%>/detail.action?seq=${my.prod_id }'">
+		                        	<img src="resources/images/${my.prod_img }" alt="poster" width="90px" onclick="location.href='<%=ctxPath%>/bookingInfo.action?rev_id=${my.rev_id}'" style="cursor: pointer;">
+		                            <%-- <img src="resources/images/${my.prod_img }" alt="poster" width="90px" onclick="location.href='<%=ctxPath%>/detail.action?seq=${my.prod_id }'"> --%>
 		                        </div>
 		                        <div class="showInfoText">
 		                            <div class="showTitle">${my.prod_title }</div>
@@ -118,19 +138,20 @@
 		                <c:if test="${my.status == '1' }">
 			                <td class="bookingStatus">
 			                    <p>예매완료</p>
-			                    <button class="bookingDetail">예매 상세</button>
+			                    <%-- <button class="bookingDetail" onclick="location.href='<%=ctxPath%>/bookingInfo.action?rev_id=${my.rev_id}'">예매 상세</button> --%>
+			                    <button class="bookingDetail" onclick="location.href='<%=ctxPath%>/bookingCancel.action?rev_id=${my.rev_id}'">예매 취소</button>
 			                </td>
 		                </c:if>
 		                <c:if test="${my.status == '0' }">
 			                <td class="bookingStatus">
 			                    <p>취소완료</p>
-			                    <button class="bookingDetail">취소 상세</button>
+			                    <%-- <button class="bookingDetail" onclick="location.href='<%=ctxPath%>/bookingInfo.action?rev_id=${my.rev_id}'">취소 상세</button> --%>
 			                </td>
 		                </c:if>
 		                <c:if test="${my.status == '2' }">
 			                <td class="bookingStatus">
 			                    <p>입금 대기</p>
-			                    <button class="bookingDetail">예매 상세</button>
+			                    <button class="bookingDetail" onclick="location.href='<%=ctxPath%>/bookingCancel.action?rev_id=${my.rev_id}'">예매 취소</button>
 			                </td>
 		                </c:if>
 		            </tr>
@@ -143,16 +164,17 @@
         <div class="tableTitle">나의 리뷰</div>
 
         <div id="reviewContent">
-				<c:if test="${empty myReviewList}">
-					<div class="reviewBox" style="text-align: center;">나의 리뷰가
-						존재하지 않습니다.</div>
-				</c:if>
-				<c:forEach varStatus="status" var="review" items="${myReviewList}">
+        	<c:if test="${empty myReviewList}">
+					<div class="reviewBox" style="text-align: center;">나의 리뷰가 존재하지 않습니다.</div>
+			</c:if>
+        	<c:forEach varStatus="status" var="review" items="${myReviewList}">
 	            <div class="reviewBox">
 	                <img src="resources/images/${review.prod_img }" alt="poster" height="110px" onclick="location.href='<%=ctxPath%>/detail.action?seq=${review.prod_id }'">
 	                <div class="review">
 	                    <h3>${review.prod_title }</h3>
-	                    <div class="date">${review.regDate }</div>
+	                    <span class="date">${review.regDate }&nbsp;</span>
+	                    <span class="star" style="display:none;">${review.star }</span>
+	                    <span class="starCnt"></span>
 	                    <div class="reviewText">${review.content }</div>
 	                    <div class="btnArea">
 	                    	<input type="hidden" name="review_id" value="${review.review_id }"/>
@@ -169,7 +191,7 @@
         <div class="tableTitle">선호 공연</div>
 
         <div id="preferredArea">
-        	<c:if test="${empty myLikeList}">
+        <c:if test="${empty myLikeList}">
 		        	나의 선호 공연이 존재하지 않습니다.
 	        </c:if>
         	<c:forEach var="like" items="${myLikeList }" varStatus="status">

@@ -901,6 +901,8 @@ public class MemberController {
 			List<HashMap<String,String>> myReviewList = service.myReviewList(loginuser.getUserid());	// 내 리뷰 내역
 			List<HashMap<String,String>> myLikeList = service.myLikeList(loginuser.getUserid());		// 선호 공연
 			
+			System.out.println(myReviewList.get(0).get("star") + "<<<<<<<<<<<<");
+			
 			mav.addObject("reserveCount", reserveCount);
 			mav.addObject("reviewCount", reviewCount);
 			mav.addObject("likeCount", likeCount);
@@ -1004,6 +1006,61 @@ public class MemberController {
 	}
 	
 	
+	
+	@RequestMapping(value="/bookingInfo.action")
+	public ModelAndView bookingInfo(HttpServletRequest request, ModelAndView mav) {
+		
+		String rev_id = request.getParameter("rev_id");
+		
+		// System.out.println("rev_id : " +rev_id );
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		HashMap<String, String> infoList = service.infoList(rev_id, loginuser.getUserid());
+		List<HashMap<String,String>> seatInfoList = service.seatInfoList(loginuser.getUserid());
+		
+		mav.addObject("infoList", infoList);
+		mav.addObject("seatInfoList", seatInfoList);
+		mav.setViewName("member/bookingInfo.tiles1");
+		
+		return mav;
+	}
+	
+	
+	@RequestMapping(value="/bookingCancel.action")
+	public ModelAndView bookingCancel(HttpServletRequest request, ModelAndView mav) {
+		
+		String rev_id = request.getParameter("rev_id");
+		// System.out.println("rev_id : " + rev_id);
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("userid", loginuser.getUserid());
+		paraMap.put("rev_id", rev_id);
+		
+		int n = service.bookingCancel(paraMap);
+		
+		String loc ="";
+		String msg ="";
+		
+		if(n > 0) {
+			loc = request.getContextPath() + "/myTicket.action";
+			msg = "예매 취소되었습니다.";
+		}
+		else {
+			loc = request.getContextPath() + "/myTicket.action";
+			msg = "취소 실패";
+		}
+		
+		mav.addObject("loc", loc);
+		mav.addObject("msg", msg);
+		mav.setViewName("msg");
+		
+		return mav;
+	}
 	
 	
 	
