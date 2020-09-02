@@ -7810,3 +7810,54 @@ where p.user_id = 'kkimsg93';
 
 select * from yes_paySeat;
 select * from yes_paySeat;
+
+drop table yes_paySeat;
+create table yes_paySeat
+(paySeat_id         number(10)
+,date_id            number(10)
+-- ,rev_id             number(10)
+,seat_name          varchar2(40)
+,user_id            varchar2(20)
+,constraint FK_user_id_paySeat foreign key(user_id) references yes_member(userid) on delete cascade
+,constraint FK_date_id_paySeat foreign key(date_id) references yes_show_date(date_id) on delete cascade
+-- ,constraint FK_rev_id_paySeat foreign key(rev_id) references yes_reserve(rev_id) on delete cascade
+);
+
+drop sequence seq_paySeat;
+create sequence seq_paySeat
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+        
+        
+        
+
+select *
+from yes_reserve
+
+select *
+from yes_rev_status
+
+select *
+from yes_show_seat
+where seat_status = 1;
+
+update yes_show_seat set seat_status = 0;
+commit;
+
+select *
+from yes_paySeat
+
+select *
+from prod
+order by prod_id
+
+select *
+from 
+
+select rev_id
+from yes_reserve
+where prod_id = #{showNum} and user_id = #{userid} and date_id = #{dateID}
