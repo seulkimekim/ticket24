@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.model.InterReviewDAO;
 import com.spring.model.ReviewVO;
@@ -16,8 +19,9 @@ public class ReviewService implements InterReviewService {
 	private InterReviewDAO dao;
 
 	
-	// 리뷰등록하기
+	// 리뷰등록하기 (트랜잭션)
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addReview(HashMap<String, String> paraMap) {
 		
 		// 리뷰시퀀스 채번하기
@@ -61,8 +65,9 @@ public class ReviewService implements InterReviewService {
 		return n;
 	}
 
-	// 리뷰 삭제하기
+	// 리뷰 삭제하기 (트랜잭션)
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int delReview(HashMap<String, String> paraMap) {
 		int n = dao.delReview(paraMap);
 		if(n == 1) { // 리뷰 삭제 성공시 포인트 회수 및 포인트테이블 내용삭제 (트랜잭션)
